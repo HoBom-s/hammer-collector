@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>CA1515</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <ProjectReference Include="..\..\src\Hammer.Collector.Api\Hammer.Collector.Api.csproj" />
     <ProjectReference Include="..\..\src\Hammer.Collector.Application\Hammer.Collector.Application.csproj" />
     <ProjectReference Include="..\..\src\Hammer.Collector.Domain\Hammer.Collector.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Hammer.Collector.Infrastructure\Hammer.Collector.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
