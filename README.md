@@ -1,17 +1,21 @@
 # Hammer Collector
 
-Hammer 경매 플랫폼의 Data Collector Service.
+Hammer 경매 플랫폼의 Log Collector Service.
+Gateway에서 발행하는 Kafka 이벤트를 수신하여 PostgreSQL에 저장합니다.
 
 ## Stack
 
 - ASP.NET (.NET 10)
-- Kafka (이벤트 발행)
+- Kafka (이벤트 수신)
+- PostgreSQL (로그 저장)
+- EF Core + Serilog
 
 ## Features
 
-- 외부 경매 API 주기적 수집
-- 데이터 정규화
-- Kafka로 auction 서비스에 이벤트 전달
+- `gateway-request-log` 토픽에서 HTTP 요청 로그 수집
+- `service-error-log` 토픽에서 서비스 에러 로그 수집
+- 자동 DB 마이그레이션 (앱 시작 시)
+- Health check (`/health`)
 
 ## Services
 
@@ -26,8 +30,11 @@ Hammer 경매 플랫폼의 Data Collector Service.
 ## Getting Started
 
 ```bash
+cp .env.example .env.development
+# .env.development 파일에서 DB/Kafka 접속 정보 수정
+
 dotnet restore
-dotnet run --project src/Hammer.Collector
+dotnet run --project src/Hammer.Collector.Api
 ```
 
 ## Branch Strategy
