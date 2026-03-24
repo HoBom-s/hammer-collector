@@ -60,7 +60,7 @@ public sealed class ApplicationExceptionHandlerTests
     {
         // Arrange
         var exception = new InvalidOperationException("unexpected");
-        DefaultHttpContext httpContext = new() { Request = { Method = "GET", Path = "/api/analytics/traffic/trends" } };
+        DefaultHttpContext httpContext = new() { Request = { Method = "GET", Path = "/analytics/traffic/trends" } };
 
         // Act
         await _sut.TryHandleAsync(httpContext, exception, CancellationToken.None);

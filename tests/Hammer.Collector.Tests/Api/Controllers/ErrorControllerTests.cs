@@ -42,7 +42,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/trend?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
+            new Uri($"/analytics/errors/trend?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/distribution?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
+            new Uri($"/analytics/errors/distribution?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -118,7 +118,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=1&pageSize=2", UriKind.Relative));
+            new Uri($"/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=1&pageSize=2", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -141,7 +141,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         await client.GetAsync(
-            new Uri($"/api/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=2&pageSize=5", UriKind.Relative));
+            new Uri($"/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=2&pageSize=5", UriKind.Relative));
 
         // Assert
         await useCase.Received(1).ExecuteAsync(

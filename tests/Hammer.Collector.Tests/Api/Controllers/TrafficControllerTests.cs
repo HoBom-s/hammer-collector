@@ -44,7 +44,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
+            new Uri($"/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         await client.GetAsync(
-            new Uri($"/api/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}&bucket=Day", UriKind.Relative));
+            new Uri($"/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}&bucket=Day", UriKind.Relative));
 
         // Assert
         await useCase.Received(1).ExecuteAsync(
@@ -88,7 +88,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/status-codes?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
+            new Uri($"/analytics/traffic/status-codes?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -110,7 +110,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/latency?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
+            new Uri($"/analytics/traffic/latency?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -136,7 +136,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/latency/slow-endpoints?from={_fromEncoded}&to={_toEncoded}&top=2", UriKind.Relative));
+            new Uri($"/analytics/traffic/latency/slow-endpoints?from={_fromEncoded}&to={_toEncoded}&top=2", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -26,8 +26,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
                     COUNT(*) AS "Count"
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
-                GROUP BY date_trunc({interval}, timestamp)
-                ORDER BY "Bucket"
+                GROUP BY 1
+                ORDER BY 1
                 """)
             .ToListAsync(ct);
 
@@ -63,8 +63,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
                     COUNT(*) AS "Count"
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
-                GROUP BY date_trunc({interval}, timestamp), status_code / 100
-                ORDER BY "Bucket", "StatusCodeClass"
+                GROUP BY 1, 2
+                ORDER BY 1, 2
                 """)
             .ToListAsync(ct);
 
@@ -153,8 +153,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
                     COUNT(*) AS "Count"
                 FROM service_error_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
-                GROUP BY date_trunc({interval}, timestamp)
-                ORDER BY "Bucket"
+                GROUP BY 1
+                ORDER BY 1
                 """)
             .ToListAsync(ct);
 
