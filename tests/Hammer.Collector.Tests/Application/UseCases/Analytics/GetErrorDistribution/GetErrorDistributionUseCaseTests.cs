@@ -9,8 +9,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetErrorDistribu
 
 public sealed class GetErrorDistributionUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetErrorDistributionUseCase _sut;
@@ -29,10 +29,10 @@ public sealed class GetErrorDistributionUseCaseTests
             [new ErrorDistributionEntry("Hammer.User", 8)],
             [new ErrorDistributionEntry("Error", 12)]);
         _analyticsRepository
-            .GetErrorDistributionAsync(From, To, Arg.Any<CancellationToken>())
+            .GetErrorDistributionAsync(_from, _to, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetErrorDistributionRequest(From, To);
+        var request = new GetErrorDistributionRequest(_from, _to);
 
         // Act
         ErrorDistributionResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -64,14 +64,14 @@ public sealed class GetErrorDistributionUseCaseTests
             .GetErrorDistributionAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(new ErrorDistributionResult([], [], []));
 
-        var request = new GetErrorDistributionRequest(From, To);
+        var request = new GetErrorDistributionRequest(_from, _to);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetErrorDistributionAsync(From, To, Arg.Any<CancellationToken>());
+            .GetErrorDistributionAsync(_from, _to, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -79,10 +79,10 @@ public sealed class GetErrorDistributionUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetErrorDistributionAsync(From, To, Arg.Any<CancellationToken>())
+            .GetErrorDistributionAsync(_from, _to, Arg.Any<CancellationToken>())
             .Returns(new ErrorDistributionResult([], [], []));
 
-        var request = new GetErrorDistributionRequest(From, To);
+        var request = new GetErrorDistributionRequest(_from, _to);
 
         // Act
         ErrorDistributionResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -98,7 +98,7 @@ public sealed class GetErrorDistributionUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetErrorDistributionRequest(To, From);
+        var request = new GetErrorDistributionRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -112,7 +112,7 @@ public sealed class GetErrorDistributionUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenFromEqualsToAsync()
     {
         // Arrange
-        var request = new GetErrorDistributionRequest(From, From);
+        var request = new GetErrorDistributionRequest(_from, _from);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

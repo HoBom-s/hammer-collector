@@ -9,8 +9,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetRecentErrors;
 
 public sealed class GetRecentErrorsUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetRecentErrorsUseCase _sut;
@@ -36,16 +36,16 @@ public sealed class GetRecentErrorsUseCaseTests
                     null,
                     "/api/users",
                     "GET",
-                    From.AddHours(2)),
+                    _from.AddHours(2)),
             ],
             10,
             1,
             20);
         _analyticsRepository
-            .GetRecentErrorsAsync(From, To, 1, 20, Arg.Any<CancellationToken>())
+            .GetRecentErrorsAsync(_from, _to, 1, 20, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetRecentErrorsRequest(From, To);
+        var request = new GetRecentErrorsRequest(_from, _to);
 
         // Act
         ErrorListResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -75,14 +75,14 @@ public sealed class GetRecentErrorsUseCaseTests
             .GetRecentErrorsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new ErrorListResult([], 0, 2, 5));
 
-        var request = new GetRecentErrorsRequest(From, To, 2, 5);
+        var request = new GetRecentErrorsRequest(_from, _to, 2, 5);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetRecentErrorsAsync(From, To, 2, 5, Arg.Any<CancellationToken>());
+            .GetRecentErrorsAsync(_from, _to, 2, 5, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -90,10 +90,10 @@ public sealed class GetRecentErrorsUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetRecentErrorsAsync(From, To, 1, 20, Arg.Any<CancellationToken>())
+            .GetRecentErrorsAsync(_from, _to, 1, 20, Arg.Any<CancellationToken>())
             .Returns(new ErrorListResult([], 0, 1, 20));
 
-        var request = new GetRecentErrorsRequest(From, To);
+        var request = new GetRecentErrorsRequest(_from, _to);
 
         // Act
         ErrorListResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -111,14 +111,14 @@ public sealed class GetRecentErrorsUseCaseTests
             .GetRecentErrorsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new ErrorListResult([], 0, 1, 20));
 
-        var request = new GetRecentErrorsRequest(From, To);
+        var request = new GetRecentErrorsRequest(_from, _to);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetRecentErrorsAsync(From, To, 1, 20, Arg.Any<CancellationToken>());
+            .GetRecentErrorsAsync(_from, _to, 1, 20, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public sealed class GetRecentErrorsUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetRecentErrorsRequest(To, From);
+        var request = new GetRecentErrorsRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -140,7 +140,7 @@ public sealed class GetRecentErrorsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenPageIsZeroAsync()
     {
         // Arrange
-        var request = new GetRecentErrorsRequest(From, To, 0);
+        var request = new GetRecentErrorsRequest(_from, _to, 0);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);
@@ -153,7 +153,7 @@ public sealed class GetRecentErrorsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenPageSizeIsZeroAsync()
     {
         // Arrange
-        var request = new GetRecentErrorsRequest(From, To, 1, 0);
+        var request = new GetRecentErrorsRequest(_from, _to, 1, 0);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);
@@ -166,7 +166,7 @@ public sealed class GetRecentErrorsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenPageSizeIsNegativeAsync()
     {
         // Arrange
-        var request = new GetRecentErrorsRequest(From, To, 1, -5);
+        var request = new GetRecentErrorsRequest(_from, _to, 1, -5);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

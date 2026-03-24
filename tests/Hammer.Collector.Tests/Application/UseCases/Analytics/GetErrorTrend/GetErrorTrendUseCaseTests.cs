@@ -10,8 +10,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetErrorTrend;
 
 public sealed class GetErrorTrendUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetErrorTrendUseCase _sut;
@@ -26,14 +26,14 @@ public sealed class GetErrorTrendUseCaseTests
     {
         // Arrange
         var expected = new ErrorTrendResult([
-            new ErrorTrendPoint(From, 5),
-            new ErrorTrendPoint(From.AddHours(1), 3),
+            new ErrorTrendPoint(_from, 5),
+            new ErrorTrendPoint(_from.AddHours(1), 3),
         ]);
         _analyticsRepository
-            .GetErrorTrendAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetErrorTrendAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetErrorTrendRequest(From, To, TimeBucket.Hour);
+        var request = new GetErrorTrendRequest(_from, _to, TimeBucket.Hour);
 
         // Act
         ErrorTrendResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -62,14 +62,14 @@ public sealed class GetErrorTrendUseCaseTests
             .GetErrorTrendAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<TimeBucket>(), Arg.Any<CancellationToken>())
             .Returns(new ErrorTrendResult([]));
 
-        var request = new GetErrorTrendRequest(From, To, TimeBucket.Day);
+        var request = new GetErrorTrendRequest(_from, _to, TimeBucket.Day);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetErrorTrendAsync(From, To, TimeBucket.Day, Arg.Any<CancellationToken>());
+            .GetErrorTrendAsync(_from, _to, TimeBucket.Day, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -77,10 +77,10 @@ public sealed class GetErrorTrendUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetErrorTrendAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetErrorTrendAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(new ErrorTrendResult([]));
 
-        var request = new GetErrorTrendRequest(From, To);
+        var request = new GetErrorTrendRequest(_from, _to);
 
         // Act
         ErrorTrendResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -94,7 +94,7 @@ public sealed class GetErrorTrendUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetErrorTrendRequest(To, From);
+        var request = new GetErrorTrendRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -108,7 +108,7 @@ public sealed class GetErrorTrendUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenFromEqualsToAsync()
     {
         // Arrange
-        var request = new GetErrorTrendRequest(From, From);
+        var request = new GetErrorTrendRequest(_from, _from);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

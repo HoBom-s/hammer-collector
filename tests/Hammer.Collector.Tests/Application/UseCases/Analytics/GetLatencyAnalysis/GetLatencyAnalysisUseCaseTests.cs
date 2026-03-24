@@ -9,8 +9,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetLatencyAnalys
 
 public sealed class GetLatencyAnalysisUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetLatencyAnalysisUseCase _sut;
@@ -26,10 +26,10 @@ public sealed class GetLatencyAnalysisUseCaseTests
         // Arrange
         var expected = new LatencyAnalysisResult(176.0, 500, 100.0, 440.0, 488.0, 5);
         _analyticsRepository
-            .GetLatencyAnalysisAsync(From, To, Arg.Any<CancellationToken>())
+            .GetLatencyAnalysisAsync(_from, _to, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetLatencyAnalysisRequest(From, To);
+        var request = new GetLatencyAnalysisRequest(_from, _to);
 
         // Act
         LatencyAnalysisResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -58,14 +58,14 @@ public sealed class GetLatencyAnalysisUseCaseTests
             .GetLatencyAnalysisAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(new LatencyAnalysisResult(0, 0, 0, 0, 0, 0));
 
-        var request = new GetLatencyAnalysisRequest(From, To);
+        var request = new GetLatencyAnalysisRequest(_from, _to);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetLatencyAnalysisAsync(From, To, Arg.Any<CancellationToken>());
+            .GetLatencyAnalysisAsync(_from, _to, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -73,10 +73,10 @@ public sealed class GetLatencyAnalysisUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetLatencyAnalysisAsync(From, To, Arg.Any<CancellationToken>())
+            .GetLatencyAnalysisAsync(_from, _to, Arg.Any<CancellationToken>())
             .Returns(new LatencyAnalysisResult(0, 0, 0, 0, 0, 0));
 
-        var request = new GetLatencyAnalysisRequest(From, To);
+        var request = new GetLatencyAnalysisRequest(_from, _to);
 
         // Act
         LatencyAnalysisResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -95,7 +95,7 @@ public sealed class GetLatencyAnalysisUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetLatencyAnalysisRequest(To, From);
+        var request = new GetLatencyAnalysisRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -109,7 +109,7 @@ public sealed class GetLatencyAnalysisUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenFromEqualsToAsync()
     {
         // Arrange
-        var request = new GetLatencyAnalysisRequest(From, From);
+        var request = new GetLatencyAnalysisRequest(_from, _from);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

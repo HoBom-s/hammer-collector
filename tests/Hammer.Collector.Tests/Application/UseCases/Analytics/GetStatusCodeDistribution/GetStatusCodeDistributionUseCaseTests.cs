@@ -10,8 +10,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetStatusCodeDis
 
 public sealed class GetStatusCodeDistributionUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetStatusCodeDistributionUseCase _sut;
@@ -27,12 +27,12 @@ public sealed class GetStatusCodeDistributionUseCaseTests
         // Arrange
         var expected = new StatusCodeDistributionResult(
             [new StatusCodeSummary(2, 80, 80.0), new StatusCodeSummary(5, 20, 20.0)],
-            [new StatusCodeBucket(From, 2, 80)]);
+            [new StatusCodeBucket(_from, 2, 80)]);
         _analyticsRepository
-            .GetStatusCodeDistributionAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetStatusCodeDistributionAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetStatusCodeDistributionRequest(From, To, TimeBucket.Hour);
+        var request = new GetStatusCodeDistributionRequest(_from, _to, TimeBucket.Hour);
 
         // Act
         StatusCodeDistributionResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -62,14 +62,14 @@ public sealed class GetStatusCodeDistributionUseCaseTests
             .GetStatusCodeDistributionAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<TimeBucket>(), Arg.Any<CancellationToken>())
             .Returns(new StatusCodeDistributionResult([], []));
 
-        var request = new GetStatusCodeDistributionRequest(From, To, TimeBucket.Day);
+        var request = new GetStatusCodeDistributionRequest(_from, _to, TimeBucket.Day);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetStatusCodeDistributionAsync(From, To, TimeBucket.Day, Arg.Any<CancellationToken>());
+            .GetStatusCodeDistributionAsync(_from, _to, TimeBucket.Day, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -77,10 +77,10 @@ public sealed class GetStatusCodeDistributionUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetStatusCodeDistributionAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetStatusCodeDistributionAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(new StatusCodeDistributionResult([], []));
 
-        var request = new GetStatusCodeDistributionRequest(From, To);
+        var request = new GetStatusCodeDistributionRequest(_from, _to);
 
         // Act
         StatusCodeDistributionResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -95,7 +95,7 @@ public sealed class GetStatusCodeDistributionUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetStatusCodeDistributionRequest(To, From);
+        var request = new GetStatusCodeDistributionRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -109,7 +109,7 @@ public sealed class GetStatusCodeDistributionUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenFromEqualsToAsync()
     {
         // Arrange
-        var request = new GetStatusCodeDistributionRequest(From, From);
+        var request = new GetStatusCodeDistributionRequest(_from, _from);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

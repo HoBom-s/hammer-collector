@@ -10,8 +10,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetTrafficTrends
 
 public sealed class GetTrafficTrendsUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetTrafficTrendsUseCase _sut;
@@ -26,14 +26,14 @@ public sealed class GetTrafficTrendsUseCaseTests
     {
         // Arrange
         var expected = new TrafficTrendResult([
-            new TrafficTrendPoint(From, 100, 0.03),
-            new TrafficTrendPoint(From.AddHours(1), 200, 0.06),
+            new TrafficTrendPoint(_from, 100, 0.03),
+            new TrafficTrendPoint(_from.AddHours(1), 200, 0.06),
         ]);
         _analyticsRepository
-            .GetTrafficTrendsAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetTrafficTrendsAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetTrafficTrendsRequest(From, To, TimeBucket.Hour);
+        var request = new GetTrafficTrendsRequest(_from, _to, TimeBucket.Hour);
 
         // Act
         TrafficTrendResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -62,14 +62,14 @@ public sealed class GetTrafficTrendsUseCaseTests
             .GetTrafficTrendsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<TimeBucket>(), Arg.Any<CancellationToken>())
             .Returns(new TrafficTrendResult([]));
 
-        var request = new GetTrafficTrendsRequest(From, To, TimeBucket.Day);
+        var request = new GetTrafficTrendsRequest(_from, _to, TimeBucket.Day);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetTrafficTrendsAsync(From, To, TimeBucket.Day, Arg.Any<CancellationToken>());
+            .GetTrafficTrendsAsync(_from, _to, TimeBucket.Day, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -77,10 +77,10 @@ public sealed class GetTrafficTrendsUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetTrafficTrendsAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>())
+            .GetTrafficTrendsAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>())
             .Returns(new TrafficTrendResult([]));
 
-        var request = new GetTrafficTrendsRequest(From, To);
+        var request = new GetTrafficTrendsRequest(_from, _to);
 
         // Act
         TrafficTrendResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -97,14 +97,14 @@ public sealed class GetTrafficTrendsUseCaseTests
             .GetTrafficTrendsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<TimeBucket>(), Arg.Any<CancellationToken>())
             .Returns(new TrafficTrendResult([]));
 
-        var request = new GetTrafficTrendsRequest(From, To);
+        var request = new GetTrafficTrendsRequest(_from, _to);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetTrafficTrendsAsync(From, To, TimeBucket.Hour, Arg.Any<CancellationToken>());
+            .GetTrafficTrendsAsync(_from, _to, TimeBucket.Hour, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public sealed class GetTrafficTrendsUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetTrafficTrendsRequest(To, From);
+        var request = new GetTrafficTrendsRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -126,7 +126,7 @@ public sealed class GetTrafficTrendsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenFromEqualsToAsync()
     {
         // Arrange
-        var request = new GetTrafficTrendsRequest(From, From);
+        var request = new GetTrafficTrendsRequest(_from, _from);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

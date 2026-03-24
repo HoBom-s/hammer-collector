@@ -15,10 +15,10 @@ namespace Hammer.Collector.Tests.Api.Controllers;
 
 public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
-    private static readonly string FromEncoded = Uri.EscapeDataString(From.ToString("O"));
-    private static readonly string ToEncoded = Uri.EscapeDataString(To.ToString("O"));
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly string _fromEncoded = Uri.EscapeDataString(_from.ToString("O"));
+    private static readonly string _toEncoded = Uri.EscapeDataString(_to.ToString("O"));
 
     private readonly WebApplicationFactory<Program> _factory;
 
@@ -34,15 +34,15 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
         IGetErrorTrendUseCase useCase = Substitute.For<IGetErrorTrendUseCase>();
         useCase.ExecuteAsync(Arg.Any<GetErrorTrendRequest>(), Arg.Any<CancellationToken>())
             .Returns(new ErrorTrendResult([
-                new ErrorTrendPoint(From, 5),
-                new ErrorTrendPoint(From.AddHours(1), 3),
+                new ErrorTrendPoint(_from, 5),
+                new ErrorTrendPoint(_from.AddHours(1), 3),
             ]));
 
         HttpClient client = CreateClient(errorTrend: useCase);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/trend?from={FromEncoded}&to={ToEncoded}", UriKind.Relative));
+            new Uri($"/api/analytics/errors/trend?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/distribution?from={FromEncoded}&to={ToEncoded}", UriKind.Relative));
+            new Uri($"/api/analytics/errors/distribution?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -97,7 +97,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
                         null,
                         "/api/users",
                         "GET",
-                        From.AddHours(2)),
+                        _from.AddHours(2)),
                     new ErrorDetail(
                         2,
                         "trace-2",
@@ -108,7 +108,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
                         null,
                         "/api/orders",
                         "POST",
-                        From.AddHours(1)),
+                        _from.AddHours(1)),
                 ],
                 10,
                 1,
@@ -118,7 +118,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/errors/recent?from={FromEncoded}&to={ToEncoded}&page=1&pageSize=2", UriKind.Relative));
+            new Uri($"/api/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=1&pageSize=2", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -141,7 +141,7 @@ public sealed class ErrorControllerTests : IClassFixture<WebApplicationFactory<P
 
         // Act
         await client.GetAsync(
-            new Uri($"/api/analytics/errors/recent?from={FromEncoded}&to={ToEncoded}&page=2&pageSize=5", UriKind.Relative));
+            new Uri($"/api/analytics/errors/recent?from={_fromEncoded}&to={_toEncoded}&page=2&pageSize=5", UriKind.Relative));
 
         // Assert
         await useCase.Received(1).ExecuteAsync(

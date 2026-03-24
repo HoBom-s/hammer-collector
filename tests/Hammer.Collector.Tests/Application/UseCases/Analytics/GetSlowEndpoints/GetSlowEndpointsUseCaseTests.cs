@@ -9,8 +9,8 @@ namespace Hammer.Collector.Tests.Application.UseCases.Analytics.GetSlowEndpoints
 
 public sealed class GetSlowEndpointsUseCaseTests
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
 
     private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
     private readonly GetSlowEndpointsUseCase _sut;
@@ -29,10 +29,10 @@ public sealed class GetSlowEndpointsUseCaseTests
             new SlowEndpointEntry("POST", "/api/users", 200.0, 200, 1),
         ]);
         _analyticsRepository
-            .GetSlowEndpointsAsync(From, To, 10, Arg.Any<CancellationToken>())
+            .GetSlowEndpointsAsync(_from, _to, 10, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        var request = new GetSlowEndpointsRequest(From, To);
+        var request = new GetSlowEndpointsRequest(_from, _to);
 
         // Act
         SlowEndpointResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -61,14 +61,14 @@ public sealed class GetSlowEndpointsUseCaseTests
             .GetSlowEndpointsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new SlowEndpointResult([]));
 
-        var request = new GetSlowEndpointsRequest(From, To, 5);
+        var request = new GetSlowEndpointsRequest(_from, _to, 5);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetSlowEndpointsAsync(From, To, 5, Arg.Any<CancellationToken>());
+            .GetSlowEndpointsAsync(_from, _to, 5, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -76,10 +76,10 @@ public sealed class GetSlowEndpointsUseCaseTests
     {
         // Arrange
         _analyticsRepository
-            .GetSlowEndpointsAsync(From, To, 10, Arg.Any<CancellationToken>())
+            .GetSlowEndpointsAsync(_from, _to, 10, Arg.Any<CancellationToken>())
             .Returns(new SlowEndpointResult([]));
 
-        var request = new GetSlowEndpointsRequest(From, To);
+        var request = new GetSlowEndpointsRequest(_from, _to);
 
         // Act
         SlowEndpointResult result = await _sut.ExecuteAsync(request, CancellationToken.None);
@@ -96,14 +96,14 @@ public sealed class GetSlowEndpointsUseCaseTests
             .GetSlowEndpointsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new SlowEndpointResult([]));
 
-        var request = new GetSlowEndpointsRequest(From, To);
+        var request = new GetSlowEndpointsRequest(_from, _to);
 
         // Act
         await _sut.ExecuteAsync(request, CancellationToken.None);
 
         // Assert
         await _analyticsRepository.Received(1)
-            .GetSlowEndpointsAsync(From, To, 10, Arg.Any<CancellationToken>());
+            .GetSlowEndpointsAsync(_from, _to, 10, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public sealed class GetSlowEndpointsUseCaseTests
     {
         // Arrange
 #pragma warning disable S2234 // Arguments intentionally swapped to test validation
-        var request = new GetSlowEndpointsRequest(To, From);
+        var request = new GetSlowEndpointsRequest(_to, _from);
 #pragma warning restore S2234
 
         // Act
@@ -125,7 +125,7 @@ public sealed class GetSlowEndpointsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenTopIsZeroAsync()
     {
         // Arrange
-        var request = new GetSlowEndpointsRequest(From, To, 0);
+        var request = new GetSlowEndpointsRequest(_from, _to, 0);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);
@@ -138,7 +138,7 @@ public sealed class GetSlowEndpointsUseCaseTests
     public async Task ExecuteAsync_ShouldThrowBadRequest_WhenTopIsNegativeAsync()
     {
         // Arrange
-        var request = new GetSlowEndpointsRequest(From, To, -1);
+        var request = new GetSlowEndpointsRequest(_from, _to, -1);
 
         // Act
         Func<Task> act = () => _sut.ExecuteAsync(request, CancellationToken.None);

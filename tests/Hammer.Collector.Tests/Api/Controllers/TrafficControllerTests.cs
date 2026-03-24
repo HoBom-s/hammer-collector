@@ -17,10 +17,10 @@ namespace Hammer.Collector.Tests.Api.Controllers;
 
 public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private static readonly DateTimeOffset From = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
-    private static readonly DateTimeOffset To = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
-    private static readonly string FromEncoded = Uri.EscapeDataString(From.ToString("O"));
-    private static readonly string ToEncoded = Uri.EscapeDataString(To.ToString("O"));
+    private static readonly DateTimeOffset _from = new(2026, 3, 22, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset _to = new(2026, 3, 23, 0, 0, 0, TimeSpan.Zero);
+    private static readonly string _fromEncoded = Uri.EscapeDataString(_from.ToString("O"));
+    private static readonly string _toEncoded = Uri.EscapeDataString(_to.ToString("O"));
 
     private readonly WebApplicationFactory<Program> _factory;
 
@@ -36,15 +36,15 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
         IGetTrafficTrendsUseCase useCase = Substitute.For<IGetTrafficTrendsUseCase>();
         useCase.ExecuteAsync(Arg.Any<GetTrafficTrendsRequest>(), Arg.Any<CancellationToken>())
             .Returns(new TrafficTrendResult([
-                new TrafficTrendPoint(From, 100, 0.03),
-                new TrafficTrendPoint(From.AddHours(1), 200, 0.06),
+                new TrafficTrendPoint(_from, 100, 0.03),
+                new TrafficTrendPoint(_from.AddHours(1), 200, 0.06),
             ]));
 
         HttpClient client = CreateClient(trafficTrends: useCase);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/trends?from={FromEncoded}&to={ToEncoded}", UriKind.Relative));
+            new Uri($"/api/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         await client.GetAsync(
-            new Uri($"/api/analytics/traffic/trends?from={FromEncoded}&to={ToEncoded}&bucket=Day", UriKind.Relative));
+            new Uri($"/api/analytics/traffic/trends?from={_fromEncoded}&to={_toEncoded}&bucket=Day", UriKind.Relative));
 
         // Assert
         await useCase.Received(1).ExecuteAsync(
@@ -82,13 +82,13 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
         useCase.ExecuteAsync(Arg.Any<GetStatusCodeDistributionRequest>(), Arg.Any<CancellationToken>())
             .Returns(new StatusCodeDistributionResult(
                 [new StatusCodeSummary(2, 80, 80.0), new StatusCodeSummary(5, 20, 20.0)],
-                [new StatusCodeBucket(From, 2, 80)]));
+                [new StatusCodeBucket(_from, 2, 80)]));
 
         HttpClient client = CreateClient(statusCodeDistribution: useCase);
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/status-codes?from={FromEncoded}&to={ToEncoded}", UriKind.Relative));
+            new Uri($"/api/analytics/traffic/status-codes?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -110,7 +110,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/latency?from={FromEncoded}&to={ToEncoded}", UriKind.Relative));
+            new Uri($"/api/analytics/traffic/latency?from={_fromEncoded}&to={_toEncoded}", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -136,7 +136,7 @@ public sealed class TrafficControllerTests : IClassFixture<WebApplicationFactory
 
         // Act
         HttpResponseMessage response = await client.GetAsync(
-            new Uri($"/api/analytics/traffic/latency/slow-endpoints?from={FromEncoded}&to={ToEncoded}&top=2", UriKind.Relative));
+            new Uri($"/api/analytics/traffic/latency/slow-endpoints?from={_fromEncoded}&to={_toEncoded}&top=2", UriKind.Relative));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
