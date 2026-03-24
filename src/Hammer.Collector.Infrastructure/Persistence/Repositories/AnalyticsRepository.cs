@@ -50,9 +50,9 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
             .AsNoTracking()
             .Where(l => l.Timestamp >= from && l.Timestamp < to);
 
-        List<StatusCodeSummaryRaw> summaryData = await filtered
+        var summaryRows = await filtered
             .GroupBy(l => l.StatusCode / 100)
-            .Select(g => new StatusCodeSummaryRaw { StatusCodeClass = g.Key, Count = g.LongCount() })
+            .Select(g => new { StatusCodeClass = g.Key, Count = g.LongCount() })
             .ToListAsync(ct);
 
         List<StatusCodeTimeSeriesRaw> timeSeriesData = await db.Database
@@ -68,8 +68,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
                 """)
             .ToListAsync(ct);
 
-        var total = summaryData.Sum(s => s.Count);
-        var summary = summaryData
+        var total = summaryRows.Sum(s => s.Count);
+        var summary = summaryRows
             .Select(s => new StatusCodeSummary(
                 s.StatusCodeClass,
                 s.Count,
@@ -181,25 +181,28 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
             .AsNoTracking()
             .Where(l => l.Timestamp >= from && l.Timestamp < to);
 
-        List<ErrorDistributionEntry> byType = await filtered
+        var byTypeRows = await filtered
             .GroupBy(l => l.ExceptionType)
-            .Select(g => new ErrorDistributionEntry(g.Key, g.LongCount()))
+            .Select(g => new { g.Key, Count = g.LongCount() })
             .OrderByDescending(e => e.Count)
             .ToListAsync(ct);
 
-        List<ErrorDistributionEntry> bySource = await filtered
+        var bySourceRows = await filtered
             .GroupBy(l => l.Source)
-            .Select(g => new ErrorDistributionEntry(g.Key, g.LongCount()))
+            .Select(g => new { g.Key, Count = g.LongCount() })
             .OrderByDescending(e => e.Count)
             .ToListAsync(ct);
 
-        List<ErrorDistributionEntry> byLevel = await filtered
+        var byLevelRows = await filtered
             .GroupBy(l => l.Level)
-            .Select(g => new ErrorDistributionEntry(g.Key, g.LongCount()))
+            .Select(g => new { g.Key, Count = g.LongCount() })
             .OrderByDescending(e => e.Count)
             .ToListAsync(ct);
 
-        return new ErrorDistributionResult(byType, bySource, byLevel);
+        return new ErrorDistributionResult(
+            byTypeRows.Select(r => new ErrorDistributionEntry(r.Key, r.Count)).ToList(),
+            bySourceRows.Select(r => new ErrorDistributionEntry(r.Key, r.Count)).ToList(),
+            byLevelRows.Select(r => new ErrorDistributionEntry(r.Key, r.Count)).ToList());
     }
 
     public async Task<ErrorListResult> GetRecentErrorsAsync(
@@ -254,13 +257,6 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
     private sealed record TrendRaw(DateTimeOffset Bucket, long Count);
 
     private sealed record StatusCodeTimeSeriesRaw(DateTimeOffset Bucket, int StatusCodeClass, long Count);
-
-    private sealed class StatusCodeSummaryRaw
-    {
-        public int StatusCodeClass { get; init; }
-
-        public long Count { get; init; }
-    }
 
     private sealed record LatencyRaw(
         double AvgMs,
