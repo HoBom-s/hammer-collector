@@ -94,9 +94,9 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
                 SELECT
                     COALESCE(AVG(duration_ms), 0) AS avg_ms,
                     COALESCE(MAX(duration_ms), 0) AS max_ms,
-                    COALESCE(percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms), 0) AS p50_ms,
-                    COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY duration_ms), 0) AS p95_ms,
-                    COALESCE(percentile_cont(0.99) WITHIN GROUP (ORDER BY duration_ms), 0) AS p99_ms,
+                    COALESCE(percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms), 0) AS p50ms,
+                    COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY duration_ms), 0) AS p95ms,
+                    COALESCE(percentile_cont(0.99) WITHIN GROUP (ORDER BY duration_ms), 0) AS p99ms,
                     COUNT(*) AS total_requests
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
