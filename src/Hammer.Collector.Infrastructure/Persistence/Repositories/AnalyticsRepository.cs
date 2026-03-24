@@ -121,19 +121,26 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
         int top,
         CancellationToken ct = default)
     {
-        List<SlowEndpointEntry> endpoints = await db.GatewayRequestLogs
+        var rows = await db.GatewayRequestLogs
             .AsNoTracking()
             .Where(l => l.Timestamp >= from && l.Timestamp < to)
             .GroupBy(l => new { l.Method, l.Path })
-            .Select(g => new SlowEndpointEntry(
+            .Select(g => new
+            {
                 g.Key.Method,
                 g.Key.Path,
-                Math.Round(g.Average(l => (double)l.DurationMs), 2),
-                g.Max(l => l.DurationMs),
-                g.LongCount()))
+                AvgMs = g.Average(l => (double)l.DurationMs),
+                MaxMs = g.Max(l => l.DurationMs),
+                RequestCount = g.LongCount(),
+            })
             .OrderByDescending(e => e.AvgMs)
             .Take(top)
             .ToListAsync(ct);
+
+        var endpoints = rows
+            .Select(r => new SlowEndpointEntry(
+                r.Method, r.Path, Math.Round(r.AvgMs, 2), r.MaxMs, r.RequestCount))
+            .ToList();
 
         return new SlowEndpointResult(endpoints);
     }
