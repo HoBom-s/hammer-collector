@@ -4,12 +4,14 @@ using Hammer.Collector.Application.UseCases.Analytics.GetRecentErrors;
 using Hammer.Collector.Domain.Analytics;
 using Hammer.Collector.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Hammer.Collector.Api.Controllers;
 
 [ApiController]
 [Route("analytics/errors")]
 [Tags("Errors")]
+[EnableRateLimiting("analytics")]
 public sealed class ErrorController(
     IGetErrorTrendUseCase getErrorTrendUseCase,
     IGetErrorDistributionUseCase getErrorDistributionUseCase,

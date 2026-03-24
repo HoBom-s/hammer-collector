@@ -5,12 +5,14 @@ using Hammer.Collector.Application.UseCases.Analytics.GetTrafficTrends;
 using Hammer.Collector.Domain.Analytics;
 using Hammer.Collector.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Hammer.Collector.Api.Controllers;
 
 [ApiController]
 [Route("analytics/traffic")]
 [Tags("Traffic")]
+[EnableRateLimiting("analytics")]
 public sealed class TrafficController(
     IGetTrafficTrendsUseCase getTrafficTrendsUseCase,
     IGetStatusCodeDistributionUseCase getStatusCodeDistributionUseCase,
