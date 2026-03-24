@@ -230,6 +230,14 @@ dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1303.severity = none
 # CA1724: Type name conflicts with namespace (DependencyInjection is intentional)
 dotnet_diagnostic.CA1724.severity = none
+# CA1515: Make class internal (controllers and Program must be public for ASP.NET Core)
+dotnet_diagnostic.CA1515.severity = none
+# CA1716: Identifiers should not match keywords (from/to are natural parameter names)
+dotnet_diagnostic.CA1716.severity = none
+# CA1812: Internal class never instantiated (false positive for DI-registered classes)
+dotnet_diagnostic.CA1812.severity = none
+# S6960: Controllers should not have multiple responsibilities (analytics sub-endpoints are cohesive)
+dotnet_diagnostic.S6960.severity = none
 
 #### StyleCop overrides ####
 # SA1101: Prefix local calls with this (conflicts with _field pattern)

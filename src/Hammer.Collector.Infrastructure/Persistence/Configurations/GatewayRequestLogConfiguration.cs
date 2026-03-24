@@ -25,5 +25,7 @@ public sealed class GatewayRequestLogConfiguration : IEntityTypeConfiguration<Ga
         builder.HasIndex(e => e.TraceId);
         builder.HasIndex(e => e.RouteCluster);
         builder.HasIndex(e => e.ClientIp);
+        builder.HasIndex(e => new { e.Timestamp, e.StatusCode });
+        builder.HasIndex(e => new { e.Timestamp, e.Method, e.Path });
     }
 }

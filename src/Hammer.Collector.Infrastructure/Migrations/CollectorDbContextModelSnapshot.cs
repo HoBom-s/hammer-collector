@@ -109,6 +109,12 @@ namespace Hammer.Collector.Infrastructure.Migrations
                     b.HasIndex("TraceId")
                         .HasDatabaseName("ix_gateway_request_logs_trace_id");
 
+                    b.HasIndex("Timestamp", "StatusCode")
+                        .HasDatabaseName("ix_gateway_request_logs_timestamp_status_code");
+
+                    b.HasIndex("Timestamp", "Method", "Path")
+                        .HasDatabaseName("ix_gateway_request_logs_timestamp_method_path");
+
                     b.ToTable("gateway_request_logs", (string)null);
                 });
 
@@ -178,6 +184,12 @@ namespace Hammer.Collector.Infrastructure.Migrations
 
                     b.HasIndex("TraceId")
                         .HasDatabaseName("ix_service_error_logs_trace_id");
+
+                    b.HasIndex("Timestamp", "ExceptionType")
+                        .HasDatabaseName("ix_service_error_logs_timestamp_exception_type");
+
+                    b.HasIndex("Timestamp", "Source")
+                        .HasDatabaseName("ix_service_error_logs_timestamp_source");
 
                     b.ToTable("service_error_logs", (string)null);
                 });

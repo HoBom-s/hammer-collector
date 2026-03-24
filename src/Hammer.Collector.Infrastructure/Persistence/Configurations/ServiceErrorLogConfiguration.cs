@@ -22,5 +22,7 @@ public sealed class ServiceErrorLogConfiguration : IEntityTypeConfiguration<Serv
 
         builder.HasIndex(e => e.Timestamp);
         builder.HasIndex(e => e.TraceId);
+        builder.HasIndex(e => new { e.Timestamp, e.ExceptionType });
+        builder.HasIndex(e => new { e.Timestamp, e.Source });
     }
 }

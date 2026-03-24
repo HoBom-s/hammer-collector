@@ -15,6 +15,7 @@ public sealed class CollectorDbContextTests : IClassFixture<PostgresFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task ShouldInsertAndRetrieveGatewayRequestLogAsync()
     {
         // Arrange
@@ -51,6 +52,7 @@ public sealed class CollectorDbContextTests : IClassFixture<PostgresFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task ShouldInsertAndRetrieveServiceErrorLogAsync()
     {
         // Arrange
@@ -85,6 +87,7 @@ public sealed class CollectorDbContextTests : IClassFixture<PostgresFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task ShouldAutoIncrementIdAsync()
     {
         // Arrange
