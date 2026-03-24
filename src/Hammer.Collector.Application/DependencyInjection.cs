@@ -6,6 +6,9 @@ using Hammer.Collector.Application.UseCases.Analytics.GetRecentErrors;
 using Hammer.Collector.Application.UseCases.Analytics.GetSlowEndpoints;
 using Hammer.Collector.Application.UseCases.Analytics.GetStatusCodeDistribution;
 using Hammer.Collector.Application.UseCases.Analytics.GetTrafficTrends;
+using Hammer.Collector.Application.UseCases.Search.SearchByTraceId;
+using Hammer.Collector.Application.UseCases.Search.SearchErrorLogs;
+using Hammer.Collector.Application.UseCases.Search.SearchRequestLogs;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hammer.Collector.Application;
@@ -22,6 +25,10 @@ public static class DependencyInjection
         services.AddScoped<IGetErrorTrendUseCase, GetErrorTrendUseCase>();
         services.AddScoped<IGetErrorDistributionUseCase, GetErrorDistributionUseCase>();
         services.AddScoped<IGetRecentErrorsUseCase, GetRecentErrorsUseCase>();
+
+        services.AddScoped<ISearchRequestLogsUseCase, SearchRequestLogsUseCase>();
+        services.AddScoped<ISearchErrorLogsUseCase, SearchErrorLogsUseCase>();
+        services.AddScoped<ISearchByTraceIdUseCase, SearchByTraceIdUseCase>();
 
         return services;
     }
