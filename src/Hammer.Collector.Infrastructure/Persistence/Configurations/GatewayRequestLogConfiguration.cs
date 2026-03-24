@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hammer.Collector.Infrastructure.Persistence.Configurations;
 
+[ExcludeFromCodeCoverage]
 public sealed class GatewayRequestLogConfiguration : IEntityTypeConfiguration<GatewayRequestLog>
 {
     public void Configure(EntityTypeBuilder<GatewayRequestLog> builder)
@@ -25,5 +27,7 @@ public sealed class GatewayRequestLogConfiguration : IEntityTypeConfiguration<Ga
         builder.HasIndex(e => e.TraceId);
         builder.HasIndex(e => e.RouteCluster);
         builder.HasIndex(e => e.ClientIp);
+        builder.HasIndex(e => new { e.Timestamp, e.StatusCode });
+        builder.HasIndex(e => new { e.Timestamp, e.Method, e.Path });
     }
 }
