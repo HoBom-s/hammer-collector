@@ -22,8 +22,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
         List<TrendRaw> points = await db.Database
             .SqlQuery<TrendRaw>($"""
                 SELECT
-                    date_trunc({interval}, timestamp) AS "Bucket",
-                    COUNT(*) AS "Count"
+                    date_trunc({interval}, timestamp) AS bucket,
+                    COUNT(*) AS count
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
                 GROUP BY 1
@@ -58,9 +58,9 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
         List<StatusCodeTimeSeriesRaw> timeSeriesData = await db.Database
             .SqlQuery<StatusCodeTimeSeriesRaw>($"""
                 SELECT
-                    date_trunc({interval}, timestamp) AS "Bucket",
-                    status_code / 100 AS "StatusCodeClass",
-                    COUNT(*) AS "Count"
+                    date_trunc({interval}, timestamp) AS bucket,
+                    status_code / 100 AS status_code_class,
+                    COUNT(*) AS count
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
                 GROUP BY 1, 2
@@ -92,12 +92,12 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
         LatencyRaw? result = await db.Database
             .SqlQuery<LatencyRaw>($"""
                 SELECT
-                    COALESCE(AVG(duration_ms), 0) AS "AvgMs",
-                    COALESCE(MAX(duration_ms), 0) AS "MaxMs",
-                    COALESCE(percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms), 0) AS "P50Ms",
-                    COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY duration_ms), 0) AS "P95Ms",
-                    COALESCE(percentile_cont(0.99) WITHIN GROUP (ORDER BY duration_ms), 0) AS "P99Ms",
-                    COUNT(*) AS "TotalRequests"
+                    COALESCE(AVG(duration_ms), 0) AS avg_ms,
+                    COALESCE(MAX(duration_ms), 0) AS max_ms,
+                    COALESCE(percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms), 0) AS p50_ms,
+                    COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY duration_ms), 0) AS p95_ms,
+                    COALESCE(percentile_cont(0.99) WITHIN GROUP (ORDER BY duration_ms), 0) AS p99_ms,
+                    COUNT(*) AS total_requests
                 FROM gateway_request_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
                 """)
@@ -149,8 +149,8 @@ internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRep
         List<TrendRaw> points = await db.Database
             .SqlQuery<TrendRaw>($"""
                 SELECT
-                    date_trunc({interval}, timestamp) AS "Bucket",
-                    COUNT(*) AS "Count"
+                    date_trunc({interval}, timestamp) AS bucket,
+                    COUNT(*) AS count
                 FROM service_error_logs
                 WHERE timestamp >= {from} AND timestamp < {to}
                 GROUP BY 1
