@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Hammer.Collector.Application.Exceptions;
 
+[ExcludeFromCodeCoverage]
 public sealed class BadRequestException : Exception
 {
     public BadRequestException()

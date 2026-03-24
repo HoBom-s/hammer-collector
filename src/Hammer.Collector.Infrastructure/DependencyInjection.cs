@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Domain.Ports;
 using Hammer.Collector.Infrastructure.Kafka;
 using Hammer.Collector.Infrastructure.Persistence;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hammer.Collector.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)

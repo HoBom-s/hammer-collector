@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Confluent.Kafka;
 using Hammer.Collector.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hammer.Collector.Infrastructure.Kafka;
 
+[ExcludeFromCodeCoverage]
 internal sealed partial class KafkaConsumerWorker : BackgroundService
 {
     private const int BatchSize = 100;

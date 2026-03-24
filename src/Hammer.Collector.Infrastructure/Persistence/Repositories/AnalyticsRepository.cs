@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Domain.Analytics;
 using Hammer.Collector.Domain.Entities;
 using Hammer.Collector.Domain.Enums;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hammer.Collector.Infrastructure.Persistence.Repositories;
 
+[ExcludeFromCodeCoverage]
 internal sealed class AnalyticsRepository(CollectorDbContext db) : IAnalyticsRepository
 {
     public async Task<TrafficTrendResult> GetTrafficTrendsAsync(

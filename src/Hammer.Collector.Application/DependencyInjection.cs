@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Application.UseCases.Analytics.GetErrorDistribution;
 using Hammer.Collector.Application.UseCases.Analytics.GetErrorTrend;
 using Hammer.Collector.Application.UseCases.Analytics.GetLatencyAnalysis;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hammer.Collector.Application;
 
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)

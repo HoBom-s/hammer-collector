@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hammer.Collector.Infrastructure.Persistence.Configurations;
 
+[ExcludeFromCodeCoverage]
 public sealed class ServiceErrorLogConfiguration : IEntityTypeConfiguration<ServiceErrorLog>
 {
     public void Configure(EntityTypeBuilder<ServiceErrorLog> builder)

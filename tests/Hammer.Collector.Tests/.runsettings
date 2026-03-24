@@ -3,4 +3,23 @@
   <RunConfiguration>
     <TestCaseFilter>Category!=Integration</TestCaseFilter>
   </RunConfiguration>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Exclude>
+            [*]*.Migrations.*,
+            [*]*.Migrations,
+            [Hammer.Collector.Api]Program
+          </Exclude>
+          <ExcludeByAttribute>
+            ExcludeFromCodeCoverage,
+            CompilerGenerated,
+            GeneratedCode
+          </ExcludeByAttribute>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
 </RunSettings>
