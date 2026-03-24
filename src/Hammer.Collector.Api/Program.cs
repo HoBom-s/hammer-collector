@@ -1,5 +1,4 @@
 using System.IO.Compression;
-using System.Threading.RateLimiting;
 using dotenv.net;
 using Hammer.Collector.Api.Middleware;
 using Hammer.Collector.Application;
@@ -31,6 +30,7 @@ builder.Services.AddSerilog(configuration =>
     configuration.ReadFrom.Configuration(builder.Configuration));
 
 var otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"];
+
 if (!string.IsNullOrEmpty(otlpEndpoint))
 {
     builder.Services.AddOpenTelemetry()
@@ -51,25 +51,32 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
 builder.Services.AddProblemDetails();
+
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
 });
+
 builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
     options.Level = CompressionLevel.Fastest);
+
 builder.Services.Configure<GzipCompressionProviderOptions>(options =>
     options.Level = CompressionLevel.Fastest);
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddFixedWindowLimiter("analytics", limiter =>
-    {
-        limiter.PermitLimit = 100;
-        limiter.Window = TimeSpan.FromMinutes(1);
-        limiter.QueueLimit = 0;
-    });
+
+    options.AddFixedWindowLimiter(
+        "analytics",
+        limiter =>
+        {
+            limiter.PermitLimit = 100;
+            limiter.Window = TimeSpan.FromMinutes(1);
+            limiter.QueueLimit = 0;
+        });
 });
 
 WebApplication app = builder.Build();
@@ -89,8 +96,11 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["X-XSS-Protection"] = "0";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'";
     context.Response.Headers["Cache-Control"] = "no-store";
+
+    if (!context.Request.Path.StartsWithSegments("/scalar", StringComparison.OrdinalIgnoreCase))
+        context.Response.Headers["Content-Security-Policy"] = "default-src 'none'";
+
     await next();
 });
 
