@@ -17,6 +17,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
         services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+        services.AddScoped<ISearchRepository, SearchRepository>();
 
         services.AddSingleton<IKafkaMessageHandler, GatewayRequestLogHandler>();
         services.AddSingleton<IKafkaMessageHandler, ServiceErrorLogHandler>();
