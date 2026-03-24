@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hammer.Collector.Api.Controllers;
 
 [ApiController]
-[Route("api/analytics/errors")]
+[Route("analytics/errors")]
 [Tags("Errors")]
 public sealed class ErrorController(
     IGetErrorTrendUseCase getErrorTrendUseCase,

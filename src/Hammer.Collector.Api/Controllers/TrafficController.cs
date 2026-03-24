@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hammer.Collector.Api.Controllers;
 
 [ApiController]
-[Route("api/analytics/traffic")]
+[Route("analytics/traffic")]
 [Tags("Traffic")]
 public sealed class TrafficController(
     IGetTrafficTrendsUseCase getTrafficTrendsUseCase,
