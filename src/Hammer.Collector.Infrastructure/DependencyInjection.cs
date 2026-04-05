@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Hammer.Collector.Domain.Ports;
+using Hammer.Collector.Infrastructure.Batch;
 using Hammer.Collector.Infrastructure.Kafka;
 using Hammer.Collector.Infrastructure.Persistence;
 using Hammer.Collector.Infrastructure.Persistence.Repositories;
@@ -22,6 +23,7 @@ public static class DependencyInjection
         services.AddSingleton<IKafkaMessageHandler, GatewayRequestLogHandler>();
         services.AddSingleton<IKafkaMessageHandler, ServiceErrorLogHandler>();
         services.AddHostedService<KafkaConsumerWorker>();
+        services.AddHostedService<LogCleanupWorker>();
 
         services
             .AddHealthChecks()
